@@ -3,9 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize components
     initNavbar();
     initPropertyCarousel();
+    initPropertyFilters();
     initAnimations();
     initBahrainTime();
     initFormValidation();
+    initNewsletterForm();
+    initBackToTop();
 });
 
 // Navbar functionality (mobile toggle and scroll effect)
@@ -98,6 +101,22 @@ function initPropertyCarousel() {
     
     // Update button states on scroll
     carousel.addEventListener('scroll', updateButtonStates);
+    
+    // Add keyboard navigation
+    carousel.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            carousel.scrollBy({ left: -320, behavior: 'smooth' });
+            setTimeout(updateButtonStates, 300);
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            carousel.scrollBy({ left: 320, behavior: 'smooth' });
+            setTimeout(updateButtonStates, 300);
+        }
+    });
+    
+    // Make carousel focusable
+    carousel.setAttribute('tabindex', '0');
     
     // Initial state
     updateButtonStates();
@@ -302,4 +321,110 @@ function initFormValidation() {
             setTimeout(() => errorMessage.remove(), 5000);
         }
     });
-} 
+}
+
+// Property filter functionality
+function initPropertyFilters() {
+    const filterButtons = document.querySelectorAll('.property-filter');
+    const propertyItems = document.querySelectorAll('.property-item');
+    
+    if (!filterButtons.length || !propertyItems.length) return;
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const filter = button.dataset.filter;
+            
+            // Update active button
+            filterButtons.forEach(btn => {
+                btn.classList.remove('bg-accent', 'text-white');
+                btn.classList.add('bg-white', 'text-navy');
+            });
+            button.classList.remove('bg-white', 'text-navy');
+            button.classList.add('bg-accent', 'text-white');
+            
+            // Filter properties
+            propertyItems.forEach(item => {
+                const itemType = item.dataset.type;
+                
+                if (filter === 'all') {
+                    item.style.display = 'block';
+                    item.style.opacity = '1';
+                } else if (itemType === filter) {
+                    item.style.display = 'block';
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                    }, 10);
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 300);
+                }
+            });
+        });
+    });
+}
+
+// Newsletter form functionality
+function initNewsletterForm() {
+    const newsletterForm = document.getElementById('newsletter-form');
+    if (!newsletterForm) return;
+    
+    newsletterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const emailInput = document.getElementById('newsletter-email');
+        const submitBtn = newsletterForm.querySelector('button[type="submit"]');
+        
+        if (emailInput && submitBtn) {
+            const originalText = submitBtn.textContent;
+            
+            // Show loading state
+            submitBtn.textContent = 'Subscribing...';
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                submitBtn.textContent = '✓ Subscribed!';
+                submitBtn.classList.remove('bg-accent');
+                submitBtn.classList.add('bg-green-500');
+                
+                // Reset form
+                newsletterForm.reset();
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.classList.remove('bg-green-500');
+                    submitBtn.classList.add('bg-accent');
+                    submitBtn.disabled = false;
+                }, 3000);
+            }, 1000);
+        }
+    });
+}
+
+// Back to top button functionality
+function initBackToTop() {
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (!backToTopBtn) return;
+    
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.classList.remove('opacity-0', 'invisible');
+            backToTopBtn.classList.add('opacity-100', 'visible');
+        } else {
+            backToTopBtn.classList.add('opacity-0', 'invisible');
+            backToTopBtn.classList.remove('opacity-100', 'visible');
+        }
+    });
+    
+    // Scroll to top when clicked
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
