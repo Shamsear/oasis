@@ -17,7 +17,26 @@ function initNavbar() {
     // Mobile menu toggle
     if (mobileMenuBtn && mobileMenu) {
         mobileMenuBtn.addEventListener('click', () => {
+            const isExpanded = mobileMenu.classList.contains('hidden');
             mobileMenu.classList.toggle('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', isExpanded);
+        });
+        
+        // Close mobile menu when clicking on a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            });
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            }
         });
     }
     
@@ -43,13 +62,45 @@ function initPropertyCarousel() {
     
     if (!carousel || !prevBtn || !nextBtn) return;
     
+    // Update button states based on scroll position
+    function updateButtonStates() {
+        const scrollLeft = carousel.scrollLeft;
+        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+        
+        // Disable prev button at start
+        if (scrollLeft <= 0) {
+            prevBtn.disabled = true;
+            prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            prevBtn.disabled = false;
+            prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        
+        // Disable next button at end
+        if (scrollLeft >= maxScroll - 10) {
+            nextBtn.disabled = true;
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            nextBtn.disabled = false;
+            nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    }
+    
     nextBtn.addEventListener('click', () => {
         carousel.scrollBy({ left: 320, behavior: 'smooth' });
+        setTimeout(updateButtonStates, 300);
     });
     
     prevBtn.addEventListener('click', () => {
         carousel.scrollBy({ left: -320, behavior: 'smooth' });
+        setTimeout(updateButtonStates, 300);
     });
+    
+    // Update button states on scroll
+    carousel.addEventListener('scroll', updateButtonStates);
+    
+    // Initial state
+    updateButtonStates();
 }
 
 // Enhanced animation system
@@ -147,14 +198,19 @@ function initBahrainTime() {
     if (!timeElement) return;
     
     function updateTime() {
-        const options = { 
-            timeZone: 'Asia/Bahrain',
-            hour: 'numeric', 
-            minute: 'numeric',
-            hour12: true
-        };
-        const bahrainTime = new Date().toLocaleTimeString('en-US', options);
-        timeElement.textContent = bahrainTime;
+        try {
+            const options = { 
+                timeZone: 'Asia/Bahrain',
+                hour: 'numeric', 
+                minute: 'numeric',
+                hour12: true
+            };
+            const bahrainTime = new Date().toLocaleTimeString('en-US', options);
+            timeElement.textContent = bahrainTime;
+        } catch (error) {
+            console.error('Error updating Bahrain time:', error);
+            timeElement.textContent = 'Time unavailable';
+        }
     }
     
     // Update immediately and then every minute
@@ -205,20 +261,45 @@ function initFormValidation() {
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             if (submitBtn) {
                 const originalText = submitBtn.textContent;
-                submitBtn.textContent = 'Message Sent!';
-                submitBtn.classList.add('bg-green-500');
-                submitBtn.classList.remove('bg-accent');
                 
-                // Reset form
-                contactForm.reset();
+                // Show loading state
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
                 
-                // Reset button after 3 seconds
+                // Simulate API call
                 setTimeout(() => {
-                    submitBtn.textContent = originalText;
-                    submitBtn.classList.remove('bg-green-500');
-                    submitBtn.classList.add('bg-accent');
-                }, 3000);
+                    submitBtn.textContent = '✓ Message Sent!';
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    submitBtn.classList.add('bg-green-500');
+                    submitBtn.classList.remove('bg-accent');
+                    submitBtn.disabled = false;
+                    
+                    // Reset form
+                    contactForm.reset();
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.classList.remove('bg-green-500');
+                        submitBtn.classList.add('bg-accent');
+                    }, 3000);
+                }, 1000);
             }
+        } else {
+            // Show error message for invalid fields
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'mt-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm';
+            errorMessage.textContent = 'Please fill in all required fields correctly.';
+            
+            // Remove existing error message if any
+            const existingError = contactForm.querySelector('.bg-red-100');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            contactForm.appendChild(errorMessage);
+            setTimeout(() => errorMessage.remove(), 5000);
         }
     });
 } 

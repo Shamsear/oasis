@@ -1,5 +1,10 @@
 /* Custom styling for Oasis Horizon */
 
+/* Base styles */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
 /* Hide scrollbar for property carousel */
 .hide-scrollbar::-webkit-scrollbar {
     display: none;
@@ -8,6 +13,24 @@
 .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+/* Glass effect with fallback for older browsers */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+@supports not (backdrop-filter: blur(10px)) {
+    .glass {
+        background: rgba(255, 255, 255, 0.9);
+    }
+}
+
+/* Gradient background */
+.gradient-bg {
+    background: linear-gradient(120deg, #f5f0e6, #eee6d8, #a7c5eb);
 }
 
 /* Property card hover effects */
