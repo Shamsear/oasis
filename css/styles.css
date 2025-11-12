@@ -1,10 +1,5 @@
 /* Custom styling for Oasis Horizon */
 
-/* Base styles */
-body {
-    font-family: 'Inter', sans-serif;
-}
-
 /* Hide scrollbar for property carousel */
 .hide-scrollbar::-webkit-scrollbar {
     display: none;
@@ -13,24 +8,6 @@ body {
 .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
-}
-
-/* Glass effect with fallback for older browsers */
-.glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-@supports not (backdrop-filter: blur(10px)) {
-    .glass {
-        background: rgba(255, 255, 255, 0.9);
-    }
-}
-
-/* Gradient background */
-.gradient-bg {
-    background: linear-gradient(120deg, #f5f0e6, #eee6d8, #a7c5eb);
 }
 
 /* Property card hover effects */
@@ -239,50 +216,4 @@ body {
 .stagger-animation > *:nth-child(3) { animation-delay: 200ms; }
 .stagger-animation > *:nth-child(4) { animation-delay: 300ms; }
 .stagger-animation > *:nth-child(5) { animation-delay: 400ms; }
-.stagger-animation > *:nth-child(6) { animation-delay: 500ms; }
-
-/* Property filter transitions */
-.property-item {
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-/* Image loading skeleton */
-.img-hover-zoom img {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-}
-
-.img-hover-zoom img[src]:not([src=""]) {
-    animation: none;
-    background: none;
-}
-
-/* Smooth focus states */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-    outline: 2px solid #5ca0d3;
-    outline-offset: 2px;
-    border-radius: 4px;
-}
-
-/* Better scrollbar for webkit browsers */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f5f0e6;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #5ca0d3;
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #274472;
-}
+.stagger-animation > *:nth-child(6) { animation-delay: 500ms; } 
